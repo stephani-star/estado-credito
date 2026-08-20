@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estado de Crédito</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="card">
+    <div class="label">Saldo actual:</div>
+    <div class="saldo-actual" id="displaySaldo">$0.00</div>
+
+    <div class="info-row">
+      <strong>Número de pago:</strong> <span id="displayPagoNum">Cargando...</span>
+    </div>
+
+    <div class="info-row">
+      <strong>Fecha de pago:</strong> <span id="displayFecha">--</span>
+    </div>
+
+    <div class="info-row">
+      <strong>Monto a pagar:</strong> <span id="displayMontoPagar">$0.00</span>
+    </div>
+  </div>
+
+  <script>
+    // Carga los datos directamente desde el archivo datos.json
+    fetch('datos.json?v=' + new Date().getTime())
+      .then(response => response.json())
+      .then(data => {
+        const formatoMoneda = new Intl.NumberFormat('es-MX', {
+          style: 'currency',
+          currency: 'MXN'
+        });
+
+        document.getElementById('displaySaldo').innerText = formatoMoneda.format(data.saldoActual);
+        document.getElementById('displayPagoNum').innerText = `Pago ${data.pagoActual} de 32`;
+        document.getElementById('displayFecha').innerText = data.fechaPago;
+        document.getElementById('displayMontoPagar').innerText = formatoMoneda.format(data.montoPagar);
+      })
+      .catch(error => console.error('Error al cargar datos:', error));
+  </script>
+</body>
+</html>

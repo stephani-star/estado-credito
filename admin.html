@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administración de Crédito</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="admin-panel">
+    <h2>Panel de Control (Administrador)</h2>
+    
+    <div class="form-group">
+      <label>Abonar pago (Resta saldo y suma 1 quincena):</label>
+      <input type="number" id="inputAbono" placeholder="Ej. 500">
+      <button onclick="abonar()">Aplicar Abono</button>
+    </div>
+
+    <hr style="margin: 20px 0;">
+
+    <div class="form-group">
+      <label>Saldo Total Actual ($):</label>
+      <input type="number" id="saldoActual">
+    </div>
+
+    <div class="form-group">
+      <label>Número de Pago (1 a 32):</label>
+      <input type="number" id="pagoActual">
+    </div>
+
+    <div class="form-group">
+      <label>Fecha Límite:</label>
+      <input type="text" id="fechaPago">
+    </div>
+
+    <div class="form-group">
+      <label>Monto a Pagar ($):</label>
+      <input type="number" id="montoPagar">
+    </div>
+
+    <button onclick="generarJSON()">Generar Nuevo Código JSON</button>
+
+    <div style="margin-top: 15px;">
+      <label>Copia este texto y pégalo dentro del archivo <strong>datos.json</strong> en GitHub:</label>
+      <textarea id="jsonOutput" readonly></textarea>
+    </div>
+  </div>
+
+  <script>
+    // Carga inicial
+    fetch('datos.json?v=' + new Date().getTime())
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('saldoActual').value = data.saldoActual;
+        document.getElementById('pagoActual').value = data.pagoActual;
+        document.getElementById('fechaPago').value = data.fechaPago;
+        document.getElementById('montoPagar').value = data.montoPagar;
+        generarJSON();
+      });
+
+    function abonar() {
+      const abono = parseFloat(document.getElementById('inputAbono').value);
+      if (!isNaN(abono) && abono > 0) {
+        let saldo = parseFloat(document.getElementById('saldoActual').value) - abono;
+        let pago = parseInt(document.getElementById('pagoActual').value);
+        
+        if (saldo < 0) saldo = 0;
+        if (pago < 32) pago++;
+
+        document.getElementById('saldoActual').value = saldo;
+        document.getElementById('pagoActual').value = pago;
+        document.getElementById('inputAbono').value = '';
+        generarJSON();
+      }
+    }
+
+    function generarJSON() {
+      const objetoDatos = {
+        saldoActual: parseFloat(document.getElementById('saldoActual').value) || 0,
+        pagoActual: parseInt(document.getElementById('pagoActual').value) || 1,
+        fechaPago: document.getElementById('fechaPago').value,
+        montoPagar: parseFloat(document.getElementById('montoPagar').value) || 0
+      };
+
+      document.getElementById('jsonOutput').value = JSON.stringify(objetoDatos, null, 2);
+    }
+  </script>
+</body>
+</html>
