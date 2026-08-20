@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Estado de Crédito</title>
-  <!-- Nombre adaptado a tu archivo en GitHub: style.css -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <div class="card">
-    <div class="label">Saldo actual:</div>
+    <!-- Hacemos clic 3 veces sobre este título para ir al panel secreto -->
+    <div class="label" id="secretTrigger" style="cursor: default; user-select: none;">Saldo actual:</div>
     <div class="saldo-actual" id="displaySaldo">$0.00</div>
 
     <div class="info-row">
@@ -24,16 +24,10 @@
     <div class="info-row">
       <strong>Monto a pagar:</strong> <span id="displayMontoPagar">$0.00</span>
     </div>
-
-    <!-- BOTÓN DE ACCESO AL PANEL ADMIN -->
-    <div style="margin-top: 30px; text-align: center;">
-      <a href="admin.html" style="color: #999; text-decoration: none; font-size: 0.8rem;">
-        ⚙️ Acceso Administrador
-      </a>
-    </div>
   </div>
 
   <script>
+    // 1. Cargar datos del cliente
     fetch('datos.json?v=' + new Date().getTime())
       .then(response => response.json())
       .then(data => {
@@ -48,6 +42,16 @@
         document.getElementById('displayMontoPagar').innerText = formatoMoneda.format(data.montoPagar);
       })
       .catch(error => console.error('Error al cargar datos:', error));
+
+    // 2. Acceso Secreto: Al hacer 3 clics seguidos en "Saldo actual:" te lleva a admin.html
+    let clicks = 0;
+    document.getElementById('secretTrigger').addEventListener('click', () => {
+      clicks++;
+      if (clicks === 3) {
+        window.location.href = 'admin.html';
+      }
+      setTimeout(() => { clicks = 0; }, 2000); // Reinicia el contador si tardas más de 2 segundos
+    });
   </script>
 </body>
 </html>
