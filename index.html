@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Estado de Crédito</title>
+  <!-- Nombre adaptado a tu archivo en GitHub: style.css -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,16 +18,22 @@
     </div>
 
     <div class="info-row">
-      <strong>Fecha de pago:</strong> <span id="displayFecha">--</span>
+      <strong>Fecha límite de pago:</strong> <span id="displayFecha">--</span>
     </div>
 
     <div class="info-row">
       <strong>Monto a pagar:</strong> <span id="displayMontoPagar">$0.00</span>
     </div>
+
+    <!-- BOTÓN DE ACCESO AL PANEL ADMIN -->
+    <div style="margin-top: 30px; text-align: center;">
+      <a href="admin.html" style="color: #999; text-decoration: none; font-size: 0.8rem;">
+        ⚙️ Acceso Administrador
+      </a>
+    </div>
   </div>
 
   <script>
-    // Carga los datos directamente desde el archivo datos.json
     fetch('datos.json?v=' + new Date().getTime())
       .then(response => response.json())
       .then(data => {
