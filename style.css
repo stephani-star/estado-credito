@@ -90,3 +90,16 @@ textarea {
   padding: 8px;
   font-family: monospace;
 }
+
+/* ALERTA DE PAGO ATRASADO */
+.alerta-atraso {
+  background-color: #ffebe9;
+  color: #d93025;
+  border: 1px solid #ffc1c0;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+}
