@@ -9,9 +9,9 @@
 <body>
 
   <div class="card">
-    <!-- MENSAJE DE PAGO ATRASADO (Oculto por defecto) -->
+    <!-- MENSAJE DE PAGO ATRASADO DINÁMICO -->
     <div id="alertaAtraso" class="alerta-atraso" style="display: none;">
-      ⚠️ Tienes un pago atrasado. Que no se te olvide.
+      ⚠️ Tienes atrasado el <strong id="pagoAtrasadoTexto">Pago 1</strong>. Que no se te olvide.
     </div>
 
     <div class="label" id="secretTrigger" style="cursor: default; user-select: none;">Saldo actual:</div>
@@ -44,9 +44,13 @@
         document.getElementById('displayFecha').innerText = data.fechaPago;
         document.getElementById('displayMontoPagar').innerText = formatoMoneda.format(data.montoPagar);
 
-        // Mostrar alerta si pagoAtrasado es true
+        // Mostrar alerta fija con el número de pago correspondiente
         if (data.pagoAtrasado) {
+          const numAtrasado = data.pagoAtrasadoNum || data.pagoActual;
+          document.getElementById('pagoAtrasadoTexto').innerText = `Pago ${numAtrasado}`;
           document.getElementById('alertaAtraso').style.display = 'block';
+        } else {
+          document.getElementById('alertaAtraso').style.display = 'none';
         }
       })
       .catch(error => console.error('Error al cargar datos:', error));
