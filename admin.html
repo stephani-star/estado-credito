@@ -39,12 +39,16 @@
       <input type="number" id="montoPagar" value="1000">
     </div>
 
-    <!-- CONTROL DE ALERTA DE ATRASO -->
-    <div class="form-group" style="margin: 15px 0;">
-      <label style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #d93025;">
-        <input type="checkbox" id="pagoAtrasado" onchange="generarJSON()">
-        ⚠️ Marcar como Pago Atrasado
+    <!-- OPCIÓN DE PAGO ATRASADO -->
+    <div class="form-group" style="margin: 15px 0; background: #fff5f5; padding: 10px; border-radius: 8px; border: 1px solid #ffc1c0;">
+      <label style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #d93025; margin-bottom: 8px;">
+        <input type="checkbox" id="pagoAtrasado" onchange="toggleAtraso()">
+        ⚠️ Marcar pago como Atrasado
       </label>
+      <div id="campoAtrasoNum" style="display: none; margin-top: 5px;">
+        <label style="font-size: 0.8rem; color: #555;">¿Qué número de pago debe?:</label>
+        <input type="number" id="pagoAtrasadoNum" style="width: 80px; padding: 5px;" oninput="generarJSON()">
+      </div>
     </div>
 
     <button onclick="generarJSON()">Generar Nuevo Código JSON</button>
@@ -69,10 +73,21 @@
           document.getElementById('fechaPago').value = data.fechaPago || '';
           document.getElementById('montoPagar').value = data.montoPagar || 0;
           document.getElementById('pagoAtrasado').checked = !!data.pagoAtrasado;
+          document.getElementById('pagoAtrasadoNum').value = data.pagoAtrasadoNum || data.pagoActual || 1;
+          toggleAtraso();
         }
         generarJSON();
       })
       .catch(() => generarJSON());
+
+    function toggleAtraso() {
+      const checked = document.getElementById('pagoAtrasado').checked;
+      document.getElementById('campoAtrasoNum').style.display = checked ? 'block' : 'none';
+      if (checked && !document.getElementById('pagoAtrasadoNum').value) {
+        document.getElementById('pagoAtrasadoNum').value = document.getElementById('pagoActual').value;
+      }
+      generarJSON();
+    }
 
     function abonar() {
       const abono = parseFloat(document.getElementById('inputAbono').value);
@@ -85,7 +100,8 @@
 
         document.getElementById('saldoActual').value = saldo.toFixed(2);
         document.getElementById('pagoActual').value = pago;
-        document.getElementById('pagoAtrasado').checked = false; // Quita el atraso al abonar
+        document.getElementById('pagoAtrasado').checked = false; 
+        toggleAtraso();
         document.getElementById('inputAbono').value = '';
         generarJSON();
       } else {
@@ -99,7 +115,8 @@
         pagoActual: parseInt(document.getElementById('pagoActual').value) || 1,
         fechaPago: document.getElementById('fechaPago').value,
         montoPagar: parseFloat(document.getElementById('montoPagar').value) || 0,
-        pagoAtrasado: document.getElementById('pagoAtrasado').checked
+        pagoAtrasado: document.getElementById('pagoAtrasado').checked,
+        pagoAtrasadoNum: parseInt(document.getElementById('pagoAtrasadoNum').value) || parseInt(document.getElementById('pagoActual').value) || 1
       };
 
       document.getElementById('jsonOutput').value = JSON.stringify(objetoDatos, null, 2);
