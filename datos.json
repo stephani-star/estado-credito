@@ -1,7 +1,8 @@
 {
   "saldoActual": 83506.25,
-  "pagoActual": 2,
-  "fechaPago": "15 de agosto",
+  "pagoActual": 3,
+  "fechaPago": "30 de agosto",
   "montoPagar": 2693.75,
-  "pagoAtrasado": true
+  "pagoAtrasado": true,
+  "pagoAtrasadoNum": 2
 }
