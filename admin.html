@@ -39,15 +39,15 @@
       <input type="number" id="montoPagar" value="1000">
     </div>
 
-    <!-- OPCIÓN DE PAGO ATRASADO -->
+    <!-- OPCIÓN DE PAGOS ATRASADOS FLEXIBLE -->
     <div class="form-group" style="margin: 15px 0; background: #fff5f5; padding: 10px; border-radius: 8px; border: 1px solid #ffc1c0;">
       <label style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #d93025; margin-bottom: 8px;">
         <input type="checkbox" id="pagoAtrasado" onchange="toggleAtraso()">
-        ⚠️ Marcar pago como Atrasado
+        ⚠️ Marcar pago(s) como Atrasado
       </label>
       <div id="campoAtrasoNum" style="display: none; margin-top: 5px;">
-        <label style="font-size: 0.8rem; color: #555;">¿Qué número de pago debe?:</label>
-        <input type="number" id="pagoAtrasadoNum" style="width: 80px; padding: 5px;" oninput="generarJSON()">
+        <label style="font-size: 0.8rem; color: #555;">¿Qué pagos debe? (Ej. "1 y 2" o "1, 2 y 3"):</label>
+        <input type="text" id="pagoAtrasadoNum" placeholder="Ej. 1 y 2" style="width: 100%; padding: 8px;" oninput="generarJSON()">
       </div>
     </div>
 
@@ -73,7 +73,7 @@
           document.getElementById('fechaPago').value = data.fechaPago || '';
           document.getElementById('montoPagar').value = data.montoPagar || 0;
           document.getElementById('pagoAtrasado').checked = !!data.pagoAtrasado;
-          document.getElementById('pagoAtrasadoNum').value = data.pagoAtrasadoNum || data.pagoActual || 1;
+          document.getElementById('pagoAtrasadoNum').value = data.pagoAtrasadoNum || data.pagoActual || '1';
           toggleAtraso();
         }
         generarJSON();
@@ -116,7 +116,7 @@
         fechaPago: document.getElementById('fechaPago').value,
         montoPagar: parseFloat(document.getElementById('montoPagar').value) || 0,
         pagoAtrasado: document.getElementById('pagoAtrasado').checked,
-        pagoAtrasadoNum: parseInt(document.getElementById('pagoAtrasadoNum').value) || parseInt(document.getElementById('pagoActual').value) || 1
+        pagoAtrasadoNum: document.getElementById('pagoAtrasadoNum').value || document.getElementById('pagoActual').value || "1"
       };
 
       document.getElementById('jsonOutput').value = JSON.stringify(objetoDatos, null, 2);
