@@ -9,9 +9,9 @@
 <body>
 
   <div class="card">
-    <!-- MENSAJE DE PAGO ATRASADO DINÁMICO -->
+    <!-- MENSAJE DE PAGOS ATRASADOS -->
     <div id="alertaAtraso" class="alerta-atraso" style="display: none;">
-      ⚠️ Tienes atrasado el <strong id="pagoAtrasadoTexto">Pago 1</strong>. Que no se te olvide.
+      ⚠️ Tienes atrasado el <strong id="pagoAtrasadoTexto">Pago 1 y 2</strong>. Que no se te olvide.
     </div>
 
     <div class="label" id="secretTrigger" style="cursor: default; user-select: none;">Saldo actual:</div>
@@ -44,10 +44,15 @@
         document.getElementById('displayFecha').innerText = data.fechaPago;
         document.getElementById('displayMontoPagar').innerText = formatoMoneda.format(data.montoPagar);
 
-        // Mostrar alerta fija con el número de pago correspondiente
+        // Mostrar aviso con texto flexible (soporta 1 o más pagos)
         if (data.pagoAtrasado) {
-          const numAtrasado = data.pagoAtrasadoNum || data.pagoActual;
-          document.getElementById('pagoAtrasadoTexto').innerText = `Pago ${numAtrasado}`;
+          const detalleAtraso = data.pagoAtrasadoNum || `Pago ${data.pagoActual}`;
+          // Si el texto ya empieza con "Pago", lo dejamos directo; si es solo un número, le anteponemos "Pago"
+          const textoFinal = detalleAtraso.toString().toLowerCase().startsWith('pago') 
+            ? detalleAtraso 
+            : `Pago ${detalleAtraso}`;
+
+          document.getElementById('pagoAtrasadoTexto').innerText = textoFinal;
           document.getElementById('alertaAtraso').style.display = 'block';
         } else {
           document.getElementById('alertaAtraso').style.display = 'none';
