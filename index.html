@@ -9,7 +9,11 @@
 <body>
 
   <div class="card">
-    <!-- Hacemos clic 3 veces sobre este título para ir al panel secreto -->
+    <!-- MENSAJE DE PAGO ATRASADO (Oculto por defecto) -->
+    <div id="alertaAtraso" class="alerta-atraso" style="display: none;">
+      ⚠️ Tienes un pago atrasado. Que no se te olvide.
+    </div>
+
     <div class="label" id="secretTrigger" style="cursor: default; user-select: none;">Saldo actual:</div>
     <div class="saldo-actual" id="displaySaldo">$0.00</div>
 
@@ -18,7 +22,7 @@
     </div>
 
     <div class="info-row">
-      <strong>Fecha de pago:</strong> <span id="displayFecha">--</span>
+      <strong>Fecha límite de pago:</strong> <span id="displayFecha">--</span>
     </div>
 
     <div class="info-row">
@@ -27,7 +31,6 @@
   </div>
 
   <script>
-    // 1. Cargar datos del cliente
     fetch('datos.json?v=' + new Date().getTime())
       .then(response => response.json())
       .then(data => {
@@ -40,17 +43,20 @@
         document.getElementById('displayPagoNum').innerText = `Pago ${data.pagoActual} de 32`;
         document.getElementById('displayFecha').innerText = data.fechaPago;
         document.getElementById('displayMontoPagar').innerText = formatoMoneda.format(data.montoPagar);
+
+        // Mostrar alerta si pagoAtrasado es true
+        if (data.pagoAtrasado) {
+          document.getElementById('alertaAtraso').style.display = 'block';
+        }
       })
       .catch(error => console.error('Error al cargar datos:', error));
 
-    // 2. Acceso Secreto: Al hacer 3 clics seguidos en "Saldo actual:" te lleva a admin.html
+    // Acceso Secreto (3 clics en "Saldo actual:")
     let clicks = 0;
     document.getElementById('secretTrigger').addEventListener('click', () => {
       clicks++;
-      if (clicks === 3) {
-        window.location.href = 'admin.html';
-      }
-      setTimeout(() => { clicks = 0; }, 2000); // Reinicia el contador si tardas más de 2 segundos
+      if (clicks === 3) window.location.href = 'admin.html';
+      setTimeout(() => { clicks = 0; }, 2000);
     });
   </script>
 </body>
