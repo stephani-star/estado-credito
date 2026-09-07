@@ -11,7 +11,7 @@
   <div class="card">
     <!-- MENSAJE DE PAGOS ATRASADOS -->
     <div id="alertaAtraso" class="alerta-atraso" style="display: none;">
-      ⚠️ Tienes atrasado el <strong id="pagoAtrasadoTexto">Pago 1 y 2</strong>. Que no se te olvide Gordis.
+      ⚠️ Tienes atrasado el <strong id="pagoAtrasadoTexto">Pago 1</strong>. Por favor ponte al corriente.
     </div>
 
     <div class="label" id="secretTrigger" style="cursor: default; user-select: none;">Saldo actual:</div>
@@ -27,6 +27,11 @@
 
     <div class="info-row">
       <strong>Pago quincenal:</strong> <span id="displayMontoPagar">$0.00</span>
+    </div>
+
+    <!-- AVISO DE PAGO INCOMPLETO / RESTANTE -->
+    <div id="alertaIncompleto" class="alerta-incompleto" style="display: none; margin-top: 15px; padding: 10px; background-color: #fff8e6; border: 1px solid #ffe0b2; border-radius: 8px; font-size: 0.85rem; color: #b78103;">
+      📌 <strong>Abono incompleto recibido:</strong> <span id="displayIncompleto">--</span>
     </div>
   </div>
 
@@ -44,10 +49,9 @@
         document.getElementById('displayFecha').innerText = data.fechaPago;
         document.getElementById('displayMontoPagar').innerText = formatoMoneda.format(data.montoPagar);
 
-        // Mostrar aviso con texto flexible (soporta 1 o más pagos)
+        // Alerta de pago atrasado
         if (data.pagoAtrasado) {
           const detalleAtraso = data.pagoAtrasadoNum || `Pago ${data.pagoActual}`;
-          // Si el texto ya empieza con "Pago", lo dejamos directo; si es solo un número, le anteponemos "Pago"
           const textoFinal = detalleAtraso.toString().toLowerCase().startsWith('pago') 
             ? detalleAtraso 
             : `Pago ${detalleAtraso}`;
@@ -56,6 +60,15 @@
           document.getElementById('alertaAtraso').style.display = 'block';
         } else {
           document.getElementById('alertaAtraso').style.display = 'none';
+        }
+
+        // Alerta de abono incompleto
+        if (data.pagoIncompleto && data.montoFaltante > 0) {
+          const faltante = formatoMoneda.format(data.montoFaltante);
+          document.getElementById('displayIncompleto').innerText = `Restan ${faltante} pendientes de cubrir para este pago.`;
+          document.getElementById('alertaIncompleto').style.display = 'block';
+        } else {
+          document.getElementById('alertaIncompleto').style.display = 'none';
         }
       })
       .catch(error => console.error('Error al cargar datos:', error));
