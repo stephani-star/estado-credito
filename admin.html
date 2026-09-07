@@ -12,9 +12,14 @@
     <h2>Panel de Control (Administrador)</h2>
     
     <div class="form-group">
-      <label>Abonar pago (Resta saldo y suma 1 quincena):</label>
-      <input type="number" id="inputAbono" placeholder="Ej. 500">
-      <button onclick="abonar()">Aplicar Abono</button>
+      <label>Abonar pago (Resta saldo al total):</label>
+      <input type="number" id="inputAbono" placeholder="Ej. 2500">
+      <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">
+        <label style="font-size: 0.85rem;">
+          <input type="checkbox" id="checkAbonoCompleto" checked> ¿Fue pago completo? (Avanza a la sig. quincena)
+        </label>
+      </div>
+      <button onclick="abonar()" style="margin-top: 10px;">Aplicar Abono</button>
     </div>
 
     <hr style="margin: 20px 0;">
@@ -36,17 +41,29 @@
 
     <div class="form-group">
       <label>Pago quincenal ($):</label>
-      <input type="number" id="montoPagar" value="1000">
+      <input type="number" id="montoPagar" value="2693">
     </div>
 
-    <!-- OPCIÓN DE PAGOS ATRASADOS FLEXIBLE -->
+    <!-- SECCIÓN PAGO INCOMPLETO -->
+    <div class="form-group" style="margin: 15px 0; background: #fff8e6; padding: 10px; border-radius: 8px; border: 1px solid #ffe0b2;">
+      <label style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #b78103; margin-bottom: 8px;">
+        <input type="checkbox" id="pagoIncompleto" onchange="toggleIncompleto()">
+        📌 Registrar pago incompleto
+      </label>
+      <div id="campoFaltante" style="display: none; margin-top: 5px;">
+        <label style="font-size: 0.8rem; color: #555;">Monto que faltó pagar ($):</label>
+        <input type="number" id="montoFaltante" placeholder="Ej. 193" style="width: 100%; padding: 8px;" oninput="generarJSON()">
+      </div>
+    </div>
+
+    <!-- SECCIÓN PAGOS ATRASADOS -->
     <div class="form-group" style="margin: 15px 0; background: #fff5f5; padding: 10px; border-radius: 8px; border: 1px solid #ffc1c0;">
       <label style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #d93025; margin-bottom: 8px;">
         <input type="checkbox" id="pagoAtrasado" onchange="toggleAtraso()">
         ⚠️ Marcar pago(s) como Atrasado
       </label>
       <div id="campoAtrasoNum" style="display: none; margin-top: 5px;">
-        <label style="font-size: 0.8rem; color: #555;">¿Qué pagos debe? (Ej. "1 y 2" o "1, 2 y 3"):</label>
+        <label style="font-size: 0.8rem; color: #555;">¿Qué pagos debe? (Ej. "1 y 2" o "2, 5 y 20"):</label>
         <input type="text" id="pagoAtrasadoNum" placeholder="Ej. 1 y 2" style="width: 100%; padding: 8px;" oninput="generarJSON()">
       </div>
     </div>
@@ -72,13 +89,25 @@
           document.getElementById('pagoActual').value = data.pagoActual || 1;
           document.getElementById('fechaPago').value = data.fechaPago || '';
           document.getElementById('montoPagar').value = data.montoPagar || 0;
+          
+          document.getElementById('pagoIncompleto').checked = !!data.pagoIncompleto;
+          document.getElementById('montoFaltante').value = data.montoFaltante || 0;
+          
           document.getElementById('pagoAtrasado').checked = !!data.pagoAtrasado;
           document.getElementById('pagoAtrasadoNum').value = data.pagoAtrasadoNum || data.pagoActual || '1';
+          
+          toggleIncompleto();
           toggleAtraso();
         }
         generarJSON();
       })
       .catch(() => generarJSON());
+
+    function toggleIncompleto() {
+      const checked = document.getElementById('pagoIncompleto').checked;
+      document.getElementById('campoFaltante').style.display = checked ? 'block' : 'none';
+      generarJSON();
+    }
 
     function toggleAtraso() {
       const checked = document.getElementById('pagoAtrasado').checked;
@@ -91,18 +120,34 @@
 
     function abonar() {
       const abono = parseFloat(document.getElementById('inputAbono').value);
+      const esPagoCompleto = document.getElementById('checkAbonoCompleto').checked;
+
       if (!isNaN(abono) && abono > 0) {
         let saldo = parseFloat(document.getElementById('saldoActual').value) - abono;
         let pago = parseInt(document.getElementById('pagoActual').value);
+        let cuota = parseFloat(document.getElementById('montoPagar').value) || 0;
         
         if (saldo < 0) saldo = 0;
-        if (pago < 32) pago++;
+
+        if (esPagoCompleto) {
+          if (pago < 32) pago++;
+          document.getElementById('pagoIncompleto').checked = false;
+          document.getElementById('montoFaltante').value = 0;
+          document.getElementById('pagoAtrasado').checked = false;
+        } else {
+          // Si el abono fue incompleto
+          let faltante = cuota - abono;
+          if (faltante < 0) faltante = 0;
+          document.getElementById('pagoIncompleto').checked = true;
+          document.getElementById('montoFaltante').value = faltante.toFixed(2);
+        }
 
         document.getElementById('saldoActual').value = saldo.toFixed(2);
         document.getElementById('pagoActual').value = pago;
-        document.getElementById('pagoAtrasado').checked = false; 
-        toggleAtraso();
         document.getElementById('inputAbono').value = '';
+        
+        toggleIncompleto();
+        toggleAtraso();
         generarJSON();
       } else {
         alert('Ingresa una cantidad válida para abonar.');
@@ -115,6 +160,8 @@
         pagoActual: parseInt(document.getElementById('pagoActual').value) || 1,
         fechaPago: document.getElementById('fechaPago').value,
         montoPagar: parseFloat(document.getElementById('montoPagar').value) || 0,
+        pagoIncompleto: document.getElementById('pagoIncompleto').checked,
+        montoFaltante: parseFloat(document.getElementById('montoFaltante').value) || 0,
         pagoAtrasado: document.getElementById('pagoAtrasado').checked,
         pagoAtrasadoNum: document.getElementById('pagoAtrasadoNum').value || document.getElementById('pagoActual').value || "1"
       };
