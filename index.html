@@ -22,7 +22,6 @@
       padding: 15px;
     }
 
-    /* CONTENEDOR TIPO APLICACIÓN MÓVIL */
     .app-card {
       background: #ffffff;
       width: 100%;
@@ -39,7 +38,7 @@
       margin-bottom: 20px;
     }
 
-    /* TARJETA DESTACADA LILA (SIN BOTÓN) */
+    /* TARJETA DESTACADA LILA */
     .hero-box {
       background-color: #f4eeff;
       border-radius: 18px;
@@ -91,14 +90,73 @@
       margin-bottom: 12px;
     }
 
+    /* DESPLEGABLE DE PAGOS REALIZADOS */
+    .dropdown-container {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      background: #ffffff;
+    }
+
+    .dropdown-btn {
+      width: 100%;
+      padding: 14px 16px;
+      background: #ffffff;
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #111827;
+      cursor: pointer;
+    }
+
+    .dropdown-btn span.arrow {
+      font-size: 0.8rem;
+      transition: transform 0.3s ease;
+      color: #6b7280;
+    }
+
+    .dropdown-btn.active span.arrow {
+      transform: rotate(180deg);
+    }
+
+    .dropdown-content {
+      display: none;
+      border-top: 1px solid #f3f4f6;
+      background-color: #fafafa;
+    }
+
+    .history-item {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .history-status {
+      font-size: 0.75rem;
+      color: #059669;
+      font-weight: 600;
+    }
+
+    /* PAGO ACTUAL / PENDIENTE */
     .payment-card {
       border: 1px solid #e5e7eb;
-      background-color: #f9fafb;
+      background-color: #ffffff;
       border-radius: 14px;
       padding: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
 
     .payment-date {
@@ -177,6 +235,19 @@
 
     <!-- PLAN DE PAGOS -->
     <div class="section-label">Plan de pagos</div>
+
+    <!-- DESPLEGABLE HISTORIAL DE PAGOS -->
+    <div class="dropdown-container" id="containerPagosRealizados" style="display: none;">
+      <button class="dropdown-btn" onclick="togglePagos()">
+        <span>Pagos realizados</span>
+        <span class="arrow">▼</span>
+      </button>
+      <div class="dropdown-content" id="listaPagosRealizados">
+        <!-- Se insertan con JavaScript -->
+      </div>
+    </div>
+
+    <!-- PAGO VIGENTE O PENDIENTE -->
     <div class="payment-card">
       <div>
         <div class="payment-date" id="displayFecha">--</div>
@@ -210,6 +281,29 @@
         document.getElementById('displayMontoQuincenal').innerText = montoFormateado;
         document.getElementById('displayMontoTarjeta').innerText = montoFormateado;
 
+        // Generar lista desplegable de Pagos Realizados
+        const numPago = parseInt(data.pagoActual) || 1;
+        if (numPago > 1) {
+          const container = document.getElementById('containerPagosRealizados');
+          const lista = document.getElementById('listaPagosRealizados');
+          container.style.display = 'block';
+
+          let htmlItems = '';
+          for (let i = 1; i < numPago; i++) {
+            htmlItems += `
+              <div class="history-item">
+                <div>
+                  <div style="font-size: 0.9rem; font-weight: 600; color: #374151;">Pago ${i} de 32</div>
+                  <div class="history-status">✓ Realizado</div>
+                </div>
+                <div style="font-size: 0.95rem; font-weight: 700; color: #374151;">${montoFormateado}</div>
+              </div>
+            `;
+          }
+          lista.innerHTML = htmlItems;
+        }
+
+        // Manejo de alertas
         if (data.pagoAtrasado) {
           const detalleAtraso = data.pagoAtrasadoNum || `Pago ${data.pagoActual}`;
           const textoFinal = detalleAtraso.toString().toLowerCase().startsWith('pago') 
@@ -233,6 +327,19 @@
         }
       })
       .catch(error => console.error('Error al cargar datos:', error));
+
+    // Función para abrir/cerrar el desplegable
+    function togglePagos() {
+      const content = document.getElementById('listaPagosRealizados');
+      const btn = document.querySelector('.dropdown-btn');
+      if (content.style.display === 'block') {
+        content.style.display = 'none';
+        btn.classList.remove('active');
+      } else {
+        content.style.display = 'block';
+        btn.classList.add('active');
+      }
+    }
 
     // Acceso Secreto: 3 clics rápidos en "Estado de Crédito"
     let clicks = 0;
