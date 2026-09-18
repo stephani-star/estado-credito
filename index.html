@@ -153,6 +153,12 @@
       font-weight: 700;
     }
 
+    .history-date {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
     /* PAGO ACTUAL */
     .payment-card {
       border: 1px solid #e5e7eb;
@@ -287,8 +293,8 @@
         document.getElementById('displayMontoQuincenal').innerText = montoFormateado;
         document.getElementById('displayMontoTarjeta').innerText = montoFormateado;
 
-        // Obtener lista de pagos con falta desde el json
         const faltantes = data.pagosFaltantes || [];
+        const fechasHistorial = data.fechasPagos || {};
 
         // Generar lista desplegable
         const numPago = parseInt(data.pagoActual) || 1;
@@ -300,6 +306,8 @@
           let htmlItems = '';
           for (let i = 1; i < numPago; i++) {
             const esFaltante = faltantes.includes(i);
+            const fechaRealizado = fechasHistorial[i] || '';
+
             if (esFaltante) {
               htmlItems += `
                 <div class="history-item" style="background-color: #fef2f2;">
@@ -316,6 +324,7 @@
                   <div>
                     <div style="font-size: 0.9rem; font-weight: 600; color: #374151;">Pago ${i} de 32</div>
                     <div class="history-status-paid">✓ Realizado</div>
+                    ${fechaRealizado ? `<div class="history-date">${fechaRealizado}</div>` : ''}
                   </div>
                   <div style="font-size: 0.95rem; font-weight: 700; color: #374151;">${montoFormateado}</div>
                 </div>
