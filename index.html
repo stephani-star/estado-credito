@@ -8,29 +8,49 @@
 </head>
 <body>
 
-  <div class="card">
-    <!-- MENSAJE DE PAGOS ATRASADOS -->
+  <div class="app-container">
+    <div class="header-title" id="secretTrigger" style="cursor: default; user-select: none;">Estado de Crédito</div>
+
+    <!-- AVISO DE PAGO ATRASADO -->
     <div id="alertaAtraso" class="alerta-atraso" style="display: none;">
       ⚠️ Tienes atrasado el <strong id="pagoAtrasadoTexto">Pago 1</strong>. Por favor ponte al corriente.
     </div>
 
-    <div class="label" id="secretTrigger" style="cursor: default; user-select: none;">Saldo actual:</div>
-    <div class="saldo-actual" id="displaySaldo">$0.00</div>
-
-    <div class="info-row">
-      <strong>Número de pago:</strong> <span id="displayPagoNum">Cargando...</span>
+    <!-- TARJETA PRINCIPAL DESTACADA (LILA) -->
+    <div class="hero-card clearfix">
+      <div class="hero-notice" id="displayAviso">Recuerda realizar tu pago puntualmente.</div>
+      <div class="hero-amount" id="displayMontoPagar">$0.00</div>
+      <button class="btn-pagar">Realizar pago →</button>
     </div>
 
-    <div class="info-row">
-      <strong>Fecha límite de pago:</strong> <span id="displayFecha">--</span>
+    <!-- RESUMEN DE DATOS EN FILA -->
+    <div class="metrics-row">
+      <div class="metric-item">
+        <div class="metric-label">Plazo</div>
+        <div class="metric-value">32 quincenas</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-label">Pago quincenal</div>
+        <div class="metric-value" id="displayMontoQuincenal">$0.00</div>
+      </div>
+      <div class="metric-item" style="text-align: right;">
+        <div class="metric-label">Restante total</div>
+        <div class="metric-value" id="displaySaldo">$0.00</div>
+      </div>
     </div>
 
-    <div class="info-row">
-      <strong>Pago quincenal:</strong> <span id="displayMontoPagar">$0.00</span>
+    <!-- PLAN DE PAGOS -->
+    <div class="section-title">Plan de pagos</div>
+    <div class="payment-item">
+      <div>
+        <div class="payment-date" id="displayFecha">--</div>
+        <div class="payment-sub" id="displayPagoNum">Pago -- de 32</div>
+      </div>
+      <div class="payment-monto" id="displayMontoTarjeta">$0.00</div>
     </div>
 
-    <!-- AVISO DE PAGO INCOMPLETO / RESTANTE -->
-    <div id="alertaIncompleto" class="alerta-incompleto" style="display: none; margin-top: 15px; padding: 10px; background-color: #fff8e6; border: 1px solid #ffe0b2; border-radius: 8px; font-size: 0.85rem; color: #b78103;">
+    <!-- AVISO DE PAGO INCOMPLETO -->
+    <div id="alertaIncompleto" class="alerta-incompleto" style="display: none;">
       📌 <strong>Abono incompleto recibido:</strong> <span id="displayIncompleto">--</span>
     </div>
   </div>
@@ -44,10 +64,16 @@
           currency: 'MXN'
         });
 
-        document.getElementById('displaySaldo').innerText = formatoMoneda.format(data.saldoActual);
+        const montoFormateado = formatoMoneda.format(data.montoPagar);
+        const saldoFormateado = formatoMoneda.format(data.saldoActual);
+
+        // Actualizar datos en pantalla
+        document.getElementById('displaySaldo').innerText = saldoFormateado;
         document.getElementById('displayPagoNum').innerText = `Pago ${data.pagoActual} de 32`;
         document.getElementById('displayFecha').innerText = data.fechaPago;
-        document.getElementById('displayMontoPagar').innerText = formatoMoneda.format(data.montoPagar);
+        document.getElementById('displayMontoPagar').innerText = montoFormateado;
+        document.getElementById('displayMontoQuincenal').innerText = montoFormateado;
+        document.getElementById('displayMontoTarjeta').innerText = montoFormateado;
 
         // Alerta de pago atrasado
         if (data.pagoAtrasado) {
@@ -58,14 +84,16 @@
 
           document.getElementById('pagoAtrasadoTexto').innerText = textoFinal;
           document.getElementById('alertaAtraso').style.display = 'block';
+          document.getElementById('displayAviso').innerText = 'Tienes un pago atrasado pendiente. Paga cuanto antes:';
         } else {
           document.getElementById('alertaAtraso').style.display = 'none';
+          document.getElementById('displayAviso').innerText = 'Recuerda realizar tu pago quincenal puntualmente:';
         }
 
         // Alerta de abono incompleto
         if (data.pagoIncompleto && data.montoFaltante > 0) {
           const faltante = formatoMoneda.format(data.montoFaltante);
-          document.getElementById('displayIncompleto').innerText = `Restan ${faltante} pendientes de cubrir para este pago.`;
+          document.getElementById('displayIncompleto').innerText = `Restan ${faltante} pendientes de cubrir para esta quincena.`;
           document.getElementById('alertaIncompleto').style.display = 'block';
         } else {
           document.getElementById('alertaIncompleto').style.display = 'none';
@@ -73,7 +101,7 @@
       })
       .catch(error => console.error('Error al cargar datos:', error));
 
-    // Acceso Secreto (3 clics en "Saldo actual:")
+    // Acceso Secreto al Panel Admin (3 clics en "Estado de Crédito")
     let clicks = 0;
     document.getElementById('secretTrigger').addEventListener('click', () => {
       clicks++;
