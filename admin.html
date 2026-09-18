@@ -59,6 +59,16 @@
     </div>
 
     <div class="checkbox-group">
+      <input type="checkbox" id="pagoAtrasado">
+      <label for="pagoAtrasado">¿Tiene pago atrasado?</label>
+    </div>
+
+    <div class="field" id="boxAtrasadoNum" style="display: none; margin-top: 8px;">
+      <label>Texto del pago atrasado (Ej: Pago 2):</label>
+      <input type="text" id="pagoAtrasadoNum">
+    </div>
+
+    <div class="checkbox-group">
       <input type="checkbox" id="pagoIncompleto">
       <label for="pagoIncompleto">¿Abono incompleto?</label>
     </div>
@@ -87,6 +97,10 @@
         fechasGuardadas = data.fechasPagos || {};
         generarCamposFechas();
 
+        document.getElementById('pagoAtrasado').checked = data.pagoAtrasado || false;
+        document.getElementById('pagoAtrasadoNum').value = data.pagoAtrasadoNum || '';
+        document.getElementById('boxAtrasadoNum').style.display = data.pagoAtrasado ? 'block' : 'none';
+
         document.getElementById('pagoIncompleto').checked = data.pagoIncompleto || false;
         document.getElementById('montoFaltante').value = data.montoFaltante || 0;
         document.getElementById('boxIncompletoMonto').style.display = data.pagoIncompleto ? 'block' : 'none';
@@ -113,6 +127,10 @@
       }
       container.innerHTML = html;
     }
+
+    document.getElementById('pagoAtrasado').addEventListener('change', (e) => {
+      document.getElementById('boxAtrasadoNum').style.display = e.target.checked ? 'block' : 'none';
+    });
 
     document.getElementById('pagoIncompleto').addEventListener('change', (e) => {
       document.getElementById('boxIncompletoMonto').style.display = e.target.checked ? 'block' : 'none';
@@ -141,6 +159,8 @@
         saldoActual: parseFloat(document.getElementById('saldoActual').value),
         fechasPagos: fechasPagos,
         pagosFaltantes: faltantesArr,
+        pagoAtrasado: document.getElementById('pagoAtrasado').checked,
+        pagoAtrasadoNum: document.getElementById('pagoAtrasadoNum').value,
         pagoIncompleto: document.getElementById('pagoIncompleto').checked,
         montoFaltante: parseFloat(document.getElementById('montoFaltante').value) || 0
       };
