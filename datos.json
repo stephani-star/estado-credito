@@ -1,10 +1,13 @@
 {
-  "saldoActual": 78312.5,
   "pagoActual": 4,
-  "fechaPago": "15 de septiembre ",
+  "fechaPago": "30 de septiembre ",
   "montoPagar": 2693.75,
+  "saldoActual": 78312.5,
+  "pagosFaltantes": [
+    2
+  ],
+  "pagoAtrasado": true,
+  "pagoAtrasadoNum": "2",
   "pagoIncompleto": false,
-  "montoFaltante": 0,
-  "pagoAtrasado": false,
-  "pagoAtrasadoNum": "2"
+  "montoFaltante": 0
 }
