@@ -16,6 +16,10 @@
     .checkbox-group input { width: auto; }
     button { width: 100%; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 600; margin-top: 15px; cursor: pointer; }
     .back-btn { background: #6b7280; margin-top: 8px; }
+    .dates-box { background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; margin-top: 8px; }
+    .date-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .date-row:last-child { margin-bottom: 0; }
+    .date-row label { margin-bottom: 0; min-width: 70px; }
   </style>
 </head>
 <body>
@@ -24,11 +28,11 @@
     
     <div class="field">
       <label>Pago Actual (Número del 1 al 32):</label>
-      <input type="number" id="pagoActual" min="1" max="32">
+      <input type="number" id="pagoActual" min="1" max="32" onchange="generarCamposFechas()">
     </div>
 
     <div class="field">
-      <label>Fecha de Próximo Pago:</label>
+      <label>Fecha del Próximo Pago:</label>
       <input type="text" id="fechaPago">
     </div>
 
@@ -40,6 +44,13 @@
     <div class="field">
       <label>Restante Total / Saldo Actual ($):</label>
       <input type="number" step="0.01" id="saldoActual">
+    </div>
+
+    <div class="field">
+      <label>Fechas de Pagos Realizados:</label>
+      <div id="contenedorFechas" class="dates-box">
+        <span style="font-size: 0.8rem; color: #6b7280;">Sube el número de Pago Actual para registrar las fechas.</span>
+      </div>
     </div>
 
     <div class="field">
@@ -72,6 +83,8 @@
   </div>
 
   <script>
+    let fechasGuardadas = {};
+
     fetch('datos.json?v=' + new Date().getTime())
       .then(res => res.json())
       .then(data => {
@@ -81,6 +94,9 @@
         document.getElementById('saldoActual').value = data.saldoActual || 0;
         document.getElementById('pagosFaltantes').value = (data.pagosFaltantes || []).join(', ');
         
+        fechasGuardadas = data.fechasPagos || {};
+        generarCamposFechas();
+
         document.getElementById('pagoAtrasado').checked = data.pagoAtrasado || false;
         document.getElementById('pagoAtrasadoNum').value = data.pagoAtrasadoNum || '';
         document.getElementById('boxAtrasadoNum').style.display = data.pagoAtrasado ? 'block' : 'none';
@@ -89,6 +105,28 @@
         document.getElementById('montoFaltante').value = data.montoFaltante || 0;
         document.getElementById('boxIncompletoMonto').style.display = data.pagoIncompleto ? 'block' : 'none';
       });
+
+    function generarCamposFechas() {
+      const pagoActual = parseInt(document.getElementById('pagoActual').value) || 1;
+      const container = document.getElementById('contenedorFechas');
+      
+      if (pagoActual <= 1) {
+        container.innerHTML = '<span style="font-size: 0.8rem; color: #6b7280;">No hay pagos anteriores aún.</span>';
+        return;
+      }
+
+      let html = '';
+      for (let i = 1; i < pagoActual; i++) {
+        const valorPrevio = fechasGuardadas[i] || '';
+        html += `
+          <div class="date-row">
+            <label>Pago ${i}:</label>
+            <input type="text" id="fecha_pago_${i}" value="${valorPrevio}" placeholder="Ej: 15 de julio">
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
 
     document.getElementById('pagoAtrasado').addEventListener('change', (e) => {
       document.getElementById('boxAtrasadoNum').style.display = e.target.checked ? 'block' : 'none';
@@ -99,16 +137,27 @@
     });
 
     function descargarJSON() {
+      const pagoActual = parseInt(document.getElementById('pagoActual').value) || 1;
+      const fechasPagos = {};
+
+      for (let i = 1; i < pagoActual; i++) {
+        const input = document.getElementById(`fecha_pago_${i}`);
+        if (input && input.value.trim() !== '') {
+          fechasPagos[i] = input.value.trim();
+        }
+      }
+
       const faltantesStr = document.getElementById('pagosFaltantes').value;
       const faltantesArr = faltantesStr.split(',')
         .map(n => parseInt(n.trim()))
         .filter(n => !isNaN(n));
 
       const data = {
-        pagoActual: parseInt(document.getElementById('pagoActual').value),
+        pagoActual: pagoActual,
         fechaPago: document.getElementById('fechaPago').value,
         montoPagar: parseFloat(document.getElementById('montoPagar').value),
         saldoActual: parseFloat(document.getElementById('saldoActual').value),
+        fechasPagos: fechasPagos,
         pagosFaltantes: faltantesArr,
         pagoAtrasado: document.getElementById('pagoAtrasado').checked,
         pagoAtrasadoNum: document.getElementById('pagoAtrasadoNum').value,
