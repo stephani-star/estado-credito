@@ -1,8 +1,13 @@
 {
-  "pagoActual": 4,
+  "pagoActual": 5,
   "fechaPago": "30 de septiembre ",
   "montoPagar": 2693.75,
   "saldoActual": 78312.5,
+  "fechasPagos": {
+    "1": "30 de Julio",
+    "3": "31 de Agosto",
+    "4": "17 de Septiembre"
+  },
   "pagosFaltantes": [
     2
   ],
