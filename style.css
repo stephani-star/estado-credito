@@ -76,16 +76,14 @@ body {
 }
 
 /* ALERTAS DENTRO O SOBRE LA TARJETA */
-.alerta-atraso {
-  background-color: #ffebe9;
-  color: #d93025;
-  border: 1px solid #ffc1c0;
-  padding: 12px;
+.alerta-atrasado {
+  background-color: #f3e8ff; /* Fondo lila suave */
+  border: 1px solid #e9d5ff;     /* Borde morado tenue */
+  color: #6b21a8;               /* Texto morado legible */
   border-radius: 12px;
-  font-size: 0.88rem;
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 15px;
+  padding: 12px;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
 }
 
 .alerta-incompleto {
