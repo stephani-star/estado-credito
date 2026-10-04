@@ -13,7 +13,7 @@
     5
   ],
   "pagoAtrasado": true,
-  "pagoAtrasadoNum": "2",
+  "pagoAtrasadoNum": "2, 5",
   "pagoIncompleto": false,
   "montoFaltante": 0
 }
