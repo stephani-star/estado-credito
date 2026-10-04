@@ -9,7 +9,8 @@
     "4": "17 de Septiembre"
   },
   "pagosFaltantes": [
-    2
+    2,
+    5
   ],
   "pagoAtrasado": true,
   "pagoAtrasadoNum": "2",
