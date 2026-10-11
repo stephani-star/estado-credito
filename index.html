@@ -35,10 +35,23 @@
       font-size: 1.3rem;
       font-weight: 700;
       color: #111827;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
-    /* TARJETA DESTACADA LILA */
+    /* NUEVO ESTILO: MORADO PASTEL / LILA SUAVE */
+    .alerta-suave {
+      background-color: #f3e8ff;
+      border: 1px solid #e9d5ff;
+      color: #6b21a8;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      text-align: center;
+      line-height: 1.4;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
     .hero-box {
       background-color: #f4eeff;
       border-radius: 18px;
@@ -60,7 +73,6 @@
       color: #111827;
     }
 
-    /* RESUMEN DE 3 COLUMNAS */
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -82,7 +94,6 @@
       color: #111827;
     }
 
-    /* PLAN DE PAGOS */
     .section-label {
       font-size: 1.05rem;
       font-weight: 700;
@@ -90,7 +101,6 @@
       margin-bottom: 12px;
     }
 
-    /* DESPLEGABLE DE HISTORIAL */
     .dropdown-container {
       border: 1px solid #e5e7eb;
       border-radius: 14px;
@@ -159,7 +169,6 @@
       margin-top: 2px;
     }
 
-    /* PAGO ACTUAL */
     .payment-card {
       border: 1px solid #e5e7eb;
       background-color: #ffffff;
@@ -189,19 +198,6 @@
       color: #111827;
     }
 
-    /* ALERTAS */
-    .alerta-atraso {
-      background-color: #fee2e2;
-      border: 1px solid #fca5a5;
-      color: #991b1b;
-      padding: 12px;
-      border-radius: 12px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-align: center;
-      margin-bottom: 16px;
-    }
-
     .alerta-incompleto {
       background-color: #fef3c7;
       border: 1px solid #fde68a;
@@ -218,14 +214,14 @@
   <div class="app-card">
     <div class="header-title" id="secretTrigger" style="cursor: default; user-select: none;">Estado de Crédito</div>
 
-    <!-- AVISO DE PAGO ATRASADO -->
-    <div id="alertaAtraso" class="alerta-atraso" style="display: none;">
-      Tienes atrasado el <strong id="pagoAtrasadoTexto">Pago 1</strong>. No se te olvide.
+    <!-- AVISO SUPERIOR CON EL NUEVO ESTILO SUAVE -->
+    <div id="bannerAtrasado" class="alerta-suave" style="display: none;">
+      Tienes atrasado el <strong id="pagoAtrasadoTexto">Pago</strong>. No se te olvide.
     </div>
 
     <!-- TARJETA DESTACADA LILA -->
     <div class="hero-box">
-      <div class="hero-text" id="displayAviso">Recuerda realizar tu pago quincenal puntualmente.</div>
+      <div class="hero-text" id="displayAviso">Tienes pago(s) atrasado(s). Realiza tu pago:</div>
       <div class="hero-price" id="displayMontoPagar">$0.00</div>
     </div>
 
@@ -293,6 +289,21 @@
         document.getElementById('displayMontoQuincenal').innerText = montoFormateado;
         document.getElementById('displayMontoTarjeta').innerText = montoFormateado;
 
+        // Manejo del banner superior suave
+        if (data.pagoAtrasado) {
+          const detalleAtraso = data.pagoAtrasadoNum || `Pago ${data.pagoActual}`;
+          const textoFinal = detalleAtraso.toString().toLowerCase().startsWith('pago') 
+            ? detalleAtraso 
+            : `Pago ${detalleAtraso}`;
+
+          document.getElementById('pagoAtrasadoTexto').innerText = textoFinal;
+          document.getElementById('bannerAtrasado').style.display = 'block';
+          document.getElementById('displayAviso').innerText = 'Tienes pago(s) atrasado(s). Realiza tu pago:';
+        } else {
+          document.getElementById('bannerAtrasado').style.display = 'none';
+          document.getElementById('displayAviso').innerText = 'Recuerda realizar tu pago quincenal puntualmente.';
+        }
+
         const faltantes = data.pagosFaltantes || [];
         const fechasHistorial = data.fechasPagos || {};
 
@@ -332,21 +343,6 @@
             }
           }
           lista.innerHTML = htmlItems;
-        }
-
-        // Manejo de alertas
-        if (data.pagoAtrasado) {
-          const detalleAtraso = data.pagoAtrasadoNum || `Pago ${data.pagoActual}`;
-          const textoFinal = detalleAtraso.toString().toLowerCase().startsWith('pago') 
-            ? detalleAtraso 
-            : `Pago ${detalleAtraso}`;
-
-          document.getElementById('pagoAtrasadoTexto').innerText = textoFinal;
-          document.getElementById('alertaAtraso').style.display = 'block';
-          document.getElementById('displayAviso').innerText = 'Tienes pago(s) atrasado(s). Realiza tu pago:';
-        } else {
-          document.getElementById('alertaAtraso').style.display = 'none';
-          document.getElementById('displayAviso').innerText = 'Recuerda realizar tu pago quincenal puntualmente.';
         }
 
         if (data.pagoIncompleto && data.montoFaltante > 0) {
