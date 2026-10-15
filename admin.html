@@ -15,6 +15,8 @@
     .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
     .checkbox-group input { width: auto; }
     button { width: 100%; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 600; margin-top: 15px; cursor: pointer; }
+    .abono-btn { background: #059669; margin-top: 5px; margin-bottom: 10px; }
+    .abono-btn:hover { background: #047857; }
     .back-btn { background: #6b7280; margin-top: 8px; }
     .dates-box { background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; margin-top: 8px; }
     .date-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
@@ -30,6 +32,9 @@
       <label>Pago Actual (Número del 1 al 32):</label>
       <input type="number" id="pagoActual" min="1" max="32" onchange="generarCamposFechas()">
     </div>
+
+    <!-- BOTÓN DE APLICAR ABONO AUTOMÁTICO -->
+    <button type="button" class="abono-btn" onclick="aplicarAbonoAutomatico()">⚡ Aplicar Abono Automático</button>
 
     <div class="field">
       <label>Fecha del Próximo Pago:</label>
@@ -56,16 +61,6 @@
     <div class="field">
       <label>Pagos Faltantes / No Realizados (Ej: 2, 3):</label>
       <input type="text" id="pagosFaltantes" placeholder="Números separados por comas">
-    </div>
-
-    <div class="checkbox-group">
-      <input type="checkbox" id="pagoAtrasado">
-      <label for="pagoAtrasado">¿Tiene pago atrasado?</label>
-    </div>
-
-    <div class="field" id="boxAtrasadoNum" style="display: none; margin-top: 8px;">
-      <label>Texto del pago atrasado (Ej: Pago 2):</label>
-      <input type="text" id="pagoAtrasadoNum">
     </div>
 
     <div class="checkbox-group">
@@ -97,19 +92,55 @@
         fechasGuardadas = data.fechasPagos || {};
         generarCamposFechas();
 
-        document.getElementById('pagoAtrasado').checked = data.pagoAtrasado || false;
-        document.getElementById('pagoAtrasadoNum').value = data.pagoAtrasadoNum || '';
-        document.getElementById('boxAtrasadoNum').style.display = data.pagoAtrasado ? 'block' : 'none';
-
         document.getElementById('pagoIncompleto').checked = data.pagoIncompleto || false;
         document.getElementById('montoFaltante').value = data.montoFaltante || 0;
         document.getElementById('boxIncompletoMonto').style.display = data.pagoIncompleto ? 'block' : 'none';
       });
 
+    // Función para aplicar la operación matemática de golpe
+    function aplicarAbonoAutomatico() {
+      let pagoInput = document.getElementById('pagoActual');
+      let saldoInput = document.getElementById('saldoActual');
+      let montoInput = document.getElementById('montoPagar');
+
+      let pagoActual = parseInt(pagoInput.value) || 1;
+      let saldoActual = parseFloat(saldoInput.value) || 0;
+      let montoPagar = parseFloat(montoInput.value) || 0;
+
+      // 1. Restar el monto del saldo actual
+      let nuevoSaldo = saldoActual - montoPagar;
+      if (nuevoSaldo < 0) nuevoSaldo = 0;
+      saldoInput.value = nuevoSaldo.toFixed(2);
+
+      // 2. Registrar la fecha de hoy automáticamente para el pago que se cubre
+      const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+      const hoy = new Date();
+      const fechaHoyStr = `${hoy.getDate()} de ${meses[hoy.getMonth()]}`;
+      
+      // Guardar temporalmente en el objeto de fechas
+      fechasGuardadas[pagoActual] = fechaHoyStr;
+
+      // 3. Incrementar el número de pago actual en 1
+      pagoInput.value = pagoActual + 1;
+
+      // 4. Regenerar los campos de fechas en pantalla
+      generarCamposFechas();
+
+      alert(`¡Abono del Pago ${pagoActual} aplicado con éxito! Se restaron $${montoPagar.toFixed(2)} y el saldo restante ahora es $${nuevoSaldo.toFixed(2)}.`);
+    }
+
     function generarCamposFechas() {
       const pagoActual = parseInt(document.getElementById('pagoActual').value) || 1;
       const container = document.getElementById('contenedorFechas');
       
+      // Capturar los valores actuales de los inputs de fechas antes de redibujar
+      for (let i = 1; i < pagoActual; i++) {
+        const inputActual = document.getElementById(`fecha_pago_${i}`);
+        if (inputActual) {
+          fechasGuardadas[i] = inputActual.value;
+        }
+      }
+
       if (pagoActual <= 1) {
         container.innerHTML = '<span style="font-size: 0.8rem; color: #6b7280;">No hay pagos anteriores aún.</span>';
         return;
@@ -127,10 +158,6 @@
       }
       container.innerHTML = html;
     }
-
-    document.getElementById('pagoAtrasado').addEventListener('change', (e) => {
-      document.getElementById('boxAtrasadoNum').style.display = e.target.checked ? 'block' : 'none';
-    });
 
     document.getElementById('pagoIncompleto').addEventListener('change', (e) => {
       document.getElementById('boxIncompletoMonto').style.display = e.target.checked ? 'block' : 'none';
@@ -159,8 +186,6 @@
         saldoActual: parseFloat(document.getElementById('saldoActual').value),
         fechasPagos: fechasPagos,
         pagosFaltantes: faltantesArr,
-        pagoAtrasado: document.getElementById('pagoAtrasado').checked,
-        pagoAtrasadoNum: document.getElementById('pagoAtrasadoNum').value,
         pagoIncompleto: document.getElementById('pagoIncompleto').checked,
         montoFaltante: parseFloat(document.getElementById('montoFaltante').value) || 0
       };
