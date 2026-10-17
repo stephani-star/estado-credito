@@ -3,201 +3,380 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel de Administración</title>
+  <title>Estado de Crédito</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-    body { background: #f3f4f6; padding: 20px; display: flex; justify-content: center; }
-    .card { background: white; padding: 24px; border-radius: 16px; max-width: 450px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    h2 { margin-bottom: 20px; color: #111827; }
-    .field { margin-bottom: 14px; }
-    label { font-size: 0.85rem; font-weight: 600; color: #374151; display: block; margin-bottom: 4px; }
-    input { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; }
-    .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
-    .checkbox-group input { width: auto; }
-    button { width: 100%; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 600; margin-top: 15px; cursor: pointer; }
-    .abono-btn { background: #059669; margin-top: 5px; margin-bottom: 10px; }
-    .abono-btn:hover { background: #047857; }
-    .back-btn { background: #6b7280; margin-top: 8px; }
-    .dates-box { background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; margin-top: 8px; }
-    .date-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .date-row:last-child { margin-bottom: 0; }
-    .date-row label { margin-bottom: 0; min-width: 70px; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f3f4f8;
+      color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .app-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 24px;
+      padding: 24px 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .header-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+
+    /* ESTILO MORADO PASTEL / LILA SUAVE */
+    .alerta-suave {
+      background-color: #f3e8ff;
+      border: 1px solid #e9d5ff;
+      color: #6b21a8;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      text-align: center;
+      line-height: 1.4;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .hero-box {
+      background-color: #f4eeff;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .hero-text {
+      font-size: 0.9rem;
+      color: #374151;
+      font-weight: 500;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .hero-price {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      border-bottom: 1px solid #f3f4f6;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+
+    .summary-item .label {
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .summary-item .val {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .section-label {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 12px;
+    }
+
+    .dropdown-container {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      background: #ffffff;
+    }
+
+    .dropdown-btn {
+      width: 100%;
+      padding: 14px 16px;
+      background: #ffffff;
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #111827;
+      cursor: pointer;
+    }
+
+    .dropdown-btn span.arrow {
+      font-size: 0.8rem;
+      transition: transform 0.3s ease;
+      color: #6b7280;
+    }
+
+    .dropdown-btn.active span.arrow {
+      transform: rotate(180deg);
+    }
+
+    .dropdown-content {
+      display: none;
+      border-top: 1px solid #f3f4f6;
+      background-color: #fafafa;
+    }
+
+    .history-item {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .history-status-paid {
+      font-size: 0.75rem;
+      color: #059669;
+      font-weight: 600;
+    }
+
+    .history-status-pending {
+      font-size: 0.75rem;
+      color: #dc2626;
+      font-weight: 700;
+    }
+
+    .history-date {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    .payment-card {
+      border: 1px solid #e5e7eb;
+      background-color: #ffffff;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .payment-date {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .payment-num {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    .payment-amount {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .alerta-incompleto {
+      background-color: #fef3c7;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      margin-top: 12px;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>Editar Estado de Crédito</h2>
-    
-    <div class="field">
-      <label>Pago Actual (Número del 1 al 32):</label>
-      <input type="number" id="pagoActual" min="1" max="32" onchange="generarCamposFechas()">
+
+  <div class="app-card">
+    <div class="header-title" id="secretTrigger" style="cursor: default; user-select: none;">Estado de Crédito</div>
+
+    <!-- AVISO SUPERIOR SUAVE -->
+    <div id="bannerAtrasado" class="alerta-suave" style="display: none;">
+      Tienes atrasado el <strong id="pagoAtrasadoTexto">Pago</strong>. No se te olvide.
     </div>
 
-    <!-- BOTÓN DE APLICAR ABONO AUTOMÁTICO -->
-    <button type="button" class="abono-btn" onclick="aplicarAbonoAutomatico()">⚡ Aplicar Abono Automático</button>
-
-    <div class="field">
-      <label>Fecha del Próximo Pago:</label>
-      <input type="text" id="fechaPago">
+    <!-- TARJETA DESTACADA LILA -->
+    <div class="hero-box">
+      <div class="hero-text" id="displayAviso">Tienes pago(s) atrasado(s). Realiza tu pago:</div>
+      <div class="hero-price" id="displayMontoPagar">$0.00</div>
     </div>
 
-    <div class="field">
-      <label>Monto a Pagar Quincenal ($):</label>
-      <input type="number" step="0.01" id="montoPagar">
-    </div>
-
-    <div class="field">
-      <label>Restante Total / Saldo Actual ($):</label>
-      <input type="number" step="0.01" id="saldoActual">
-    </div>
-
-    <div class="field">
-      <label>Fechas de Pagos Realizados:</label>
-      <div id="contenedorFechas" class="dates-box">
-        <span style="font-size: 0.8rem; color: #6b7280;">Sube el número de Pago Actual para registrar las fechas.</span>
+    <!-- RESUMEN DE DATOS -->
+    <div class="summary-grid">
+      <div class="summary-item">
+        <div class="label">Plazo</div>
+        <div class="val" id="displayPlazo">0 de 32</div>
+      </div>
+      <div class="summary-item">
+        <div class="label">Pago</div>
+        <div class="val" id="displayMontoQuincenal">$0.00</div>
+      </div>
+      <div class="summary-item" style="text-align: right;">
+        <div class="label">Restante</div>
+        <div class="val" id="displaySaldo">$0.00</div>
       </div>
     </div>
 
-    <div class="field">
-      <label>Pagos Faltantes / No Realizados (Ej: 2, 3):</label>
-      <input type="text" id="pagosFaltantes" placeholder="Números separados por comas">
+    <!-- PLAN DE PAGOS -->
+    <div class="section-label">Plan de pagos</div>
+
+    <!-- DESPLEGABLE HISTORIAL DE PAGOS -->
+    <div class="dropdown-container" id="containerPagosRealizados" style="display: none;">
+      <button class="dropdown-btn" onclick="togglePagos()">
+        <span>Historial de pagos</span>
+        <span class="arrow">▼</span>
+      </button>
+      <div class="dropdown-content" id="listaPagosRealizados">
+        <!-- Se insertan con JavaScript -->
+      </div>
     </div>
 
-    <div class="checkbox-group">
-      <input type="checkbox" id="pagoIncompleto">
-      <label for="pagoIncompleto">¿Abono incompleto?</label>
+    <!-- PAGO VIGENTE O PENDIENTE -->
+    <div class="payment-card">
+      <div>
+        <div class="payment-date" id="displayFecha">--</div>
+        <div class="payment-num" id="displayPagoNum">Pago -- de 32</div>
+      </div>
+      <div class="payment-amount" id="displayMontoTarjeta">$0.00</div>
     </div>
 
-    <div class="field" id="boxIncompletoMonto" style="display: none; margin-top: 8px;">
-      <label>Monto Faltante ($):</label>
-      <input type="number" step="0.01" id="montoFaltante">
+    <!-- AVISO DE PAGO INCOMPLETO -->
+    <div id="alertaIncompleto" class="alerta-incompleto" style="display: none;">
+      📌 <strong>Abono incompleto:</strong> <span id="displayIncompleto">--</span>
     </div>
-
-    <button onclick="descargarJSON()">Descargar datos.json</button>
-    <button class="back-btn" onclick="window.location.href='index.html'">Volver al Inicio</button>
   </div>
 
   <script>
-    let fechasGuardadas = {};
-
     fetch('datos.json?v=' + new Date().getTime())
-      .then(res => res.json())
+      .then(response => response.json())
       .then(data => {
-        document.getElementById('pagoActual').value = data.pagoActual || 1;
-        document.getElementById('fechaPago').value = data.fechaPago || '';
-        document.getElementById('montoPagar').value = data.montoPagar || 0;
-        document.getElementById('saldoActual').value = data.saldoActual || 0;
-        document.getElementById('pagosFaltantes').value = (data.pagosFaltantes || []).join(', ');
-        
-        fechasGuardadas = data.fechasPagos || {};
-        generarCamposFechas();
+        const formatoMoneda = new Intl.NumberFormat('es-MX', {
+          style: 'currency',
+          currency: 'MXN'
+        });
 
-        document.getElementById('pagoIncompleto').checked = data.pagoIncompleto || false;
-        document.getElementById('montoFaltante').value = data.montoFaltante || 0;
-        document.getElementById('boxIncompletoMonto').style.display = data.pagoIncompleto ? 'block' : 'none';
-      });
+        const montoFormateado = formatoMoneda.format(data.montoPagar);
+        const saldoFormateado = formatoMoneda.format(data.saldoActual);
 
-    // Función para aplicar la operación matemática de golpe
-    function aplicarAbonoAutomatico() {
-      let pagoInput = document.getElementById('pagoActual');
-      let saldoInput = document.getElementById('saldoActual');
-      let montoInput = document.getElementById('montoPagar');
+        // Actualizar el valor de Plazo dinámicamente
+        const pagoActual = parseInt(data.pagoActual) || 1;
+        document.getElementById('displayPlazo').innerText = `${pagoActual - 1} de 32`;
 
-      let pagoActual = parseInt(pagoInput.value) || 1;
-      let saldoActual = parseFloat(saldoInput.value) || 0;
-      let montoPagar = parseFloat(montoInput.value) || 0;
+        document.getElementById('displaySaldo').innerText = saldoFormateado;
+        document.getElementById('displayPagoNum').innerText = `Pago ${data.pagoActual} de 32`;
+        document.getElementById('displayFecha').innerText = data.fechaPago;
+        document.getElementById('displayMontoPagar').innerText = montoFormateado;
+        document.getElementById('displayMontoQuincenal').innerText = montoFormateado;
+        document.getElementById('displayMontoTarjeta').innerText = montoFormateado;
 
-      // 1. Restar el monto del saldo actual
-      let nuevoSaldo = saldoActual - montoPagar;
-      if (nuevoSaldo < 0) nuevoSaldo = 0;
-      saldoInput.value = nuevoSaldo.toFixed(2);
+        // Manejo del banner superior suave
+        if (data.pagoAtrasado) {
+          const detalleAtraso = data.pagoAtrasadoNum || `Pago ${data.pagoActual}`;
+          const textoFinal = detalleAtraso.toString().toLowerCase().startsWith('pago') 
+            ? detalleAtraso 
+            : `Pago ${detalleAtraso}`;
 
-      // 2. Registrar la fecha de hoy automáticamente para el pago que se cubre
-      const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-      const hoy = new Date();
-      const fechaHoyStr = `${hoy.getDate()} de ${meses[hoy.getMonth()]}`;
-      
-      // Guardar temporalmente en el objeto de fechas
-      fechasGuardadas[pagoActual] = fechaHoyStr;
-
-      // 3. Incrementar el número de pago actual en 1
-      pagoInput.value = pagoActual + 1;
-
-      // 4. Regenerar los campos de fechas en pantalla
-      generarCamposFechas();
-
-      alert(`¡Abono del Pago ${pagoActual} aplicado con éxito! Se restaron $${montoPagar.toFixed(2)} y el saldo restante ahora es $${nuevoSaldo.toFixed(2)}.`);
-    }
-
-    function generarCamposFechas() {
-      const pagoActual = parseInt(document.getElementById('pagoActual').value) || 1;
-      const container = document.getElementById('contenedorFechas');
-      
-      // Capturar los valores actuales de los inputs de fechas antes de redibujar
-      for (let i = 1; i < pagoActual; i++) {
-        const inputActual = document.getElementById(`fecha_pago_${i}`);
-        if (inputActual) {
-          fechasGuardadas[i] = inputActual.value;
+          document.getElementById('pagoAtrasadoTexto').innerText = textoFinal;
+          document.getElementById('bannerAtrasado').style.display = 'block';
+          document.getElementById('displayAviso').innerText = 'Tienes pago(s) atrasado(s). Realiza tu pago:';
+        } else {
+          document.getElementById('bannerAtrasado').style.display = 'none';
+          document.getElementById('displayAviso').innerText = 'Recuerda realizar tu pago quincenal puntualmente.';
         }
-      }
 
-      if (pagoActual <= 1) {
-        container.innerHTML = '<span style="font-size: 0.8rem; color: #6b7280;">No hay pagos anteriores aún.</span>';
-        return;
-      }
+        const faltantes = data.pagosFaltantes || [];
+        const fechasHistorial = data.fechasPagos || {};
 
-      let html = '';
-      for (let i = 1; i < pagoActual; i++) {
-        const valorPrevio = fechasGuardadas[i] || '';
-        html += `
-          <div class="date-row">
-            <label>Pago ${i}:</label>
-            <input type="text" id="fecha_pago_${i}" value="${valorPrevio}" placeholder="Ej: 15 de julio">
-          </div>
-        `;
+        // Generar lista desplegable
+        if (pagoActual > 1 || faltantes.length > 0) {
+          const container = document.getElementById('containerPagosRealizados');
+          const lista = document.getElementById('listaPagosRealizados');
+          container.style.display = 'block';
+
+          let htmlItems = '';
+          for (let i = 1; i < pagoActual; i++) {
+            const esFaltante = faltantes.includes(i);
+            const fechaRealizado = fechasHistorial[i] || '';
+
+            if (esFaltante) {
+              htmlItems += `
+                <div class="history-item" style="background-color: #fef2f2;">
+                  <div>
+                    <div style="font-size: 0.9rem; font-weight: 600; color: #991b1b;">Pago ${i} de 32</div>
+                    <div class="history-status-pending">❌ Pendiente / No realizado</div>
+                  </div>
+                  <div style="font-size: 0.95rem; font-weight: 700; color: #991b1b;">${montoFormateado}</div>
+                </div>
+              `;
+            } else {
+              htmlItems += `
+                <div class="history-item">
+                  <div>
+                    <div style="font-size: 0.9rem; font-weight: 600; color: #374151;">Pago ${i} de 32</div>
+                    <div class="history-status-paid">✓ Realizado</div>
+                    ${fechaRealizado ? `<div class="history-date">${fechaRealizado}</div>` : ''}
+                  </div>
+                  <div style="font-size: 0.95rem; font-weight: 700; color: #374151;">${montoFormateado}</div>
+                </div>
+              `;
+            }
+          }
+          lista.innerHTML = htmlItems;
+        }
+
+        if (data.pagoIncompleto && data.montoFaltante > 0) {
+          const faltante = formatoMoneda.format(data.montoFaltante);
+          document.getElementById('displayIncompleto').innerText = `Restan ${faltante} pendientes de cubrir.`;
+          document.getElementById('alertaIncompleto').style.display = 'block';
+        } else {
+          document.getElementById('alertaIncompleto').style.display = 'none';
+        }
+      })
+      .catch(error => console.error('Error al cargar datos:', error));
+
+    function togglePagos() {
+      const content = document.getElementById('listaPagosRealizados');
+      const btn = document.querySelector('.dropdown-btn');
+      if (content.style.display === 'block') {
+        content.style.display = 'none';
+        btn.classList.remove('active');
+      } else {
+        content.style.display = 'block';
+        btn.classList.add('active');
       }
-      container.innerHTML = html;
     }
 
-    document.getElementById('pagoIncompleto').addEventListener('change', (e) => {
-      document.getElementById('boxIncompletoMonto').style.display = e.target.checked ? 'block' : 'none';
+    // Acceso Secreto: 3 clics rápidos
+    let clicks = 0;
+    document.getElementById('secretTrigger').addEventListener('click', () => {
+      clicks++;
+      if (clicks === 3) window.location.href = 'admin.html';
+      setTimeout(() => { clicks = 0; }, 2000);
     });
-
-    function descargarJSON() {
-      const pagoActual = parseInt(document.getElementById('pagoActual').value) || 1;
-      const fechasPagos = {};
-
-      for (let i = 1; i < pagoActual; i++) {
-        const input = document.getElementById(`fecha_pago_${i}`);
-        if (input && input.value.trim() !== '') {
-          fechasPagos[i] = input.value.trim();
-        }
-      }
-
-      const faltantesStr = document.getElementById('pagosFaltantes').value;
-      const faltantesArr = faltantesStr.split(',')
-        .map(n => parseInt(n.trim()))
-        .filter(n => !isNaN(n));
-
-      const data = {
-        pagoActual: pagoActual,
-        fechaPago: document.getElementById('fechaPago').value,
-        montoPagar: parseFloat(document.getElementById('montoPagar').value),
-        saldoActual: parseFloat(document.getElementById('saldoActual').value),
-        fechasPagos: fechasPagos,
-        pagosFaltantes: faltantesArr,
-        pagoIncompleto: document.getElementById('pagoIncompleto').checked,
-        montoFaltante: parseFloat(document.getElementById('montoFaltante').value) || 0
-      };
-
-      const jsonStr = JSON.stringify(data, null, 2);
-      const blob = new Blob([jsonStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'datos.json';
-      a.click();
-    }
   </script>
 </body>
 </html>
