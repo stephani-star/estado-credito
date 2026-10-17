@@ -198,11 +198,11 @@
       color: #111827;
     }
 
-    /* NUEVO ESTILO AMARILLO PASTEL / CREMA SUAVE (ABONO INCOMPLETO) */
-    .alerta-incompleto {
-      background-color: #fffbeb;  /* Fondo vainilla/crema muy suave */
-      border: 1px solid #fef3c7;      /* Borde amarillo pastel fino */
-      color: #b45309;               /* Texto miel/marrón cálido legible */
+    /* ESTILO AMARILLO PASTEL SUAVE EN CSS */
+    .alerta-incompleto-pastel {
+      background-color: #fffbeb !important;
+      border: 1px solid #fef3c7 !important;
+      color: #b45309 !important;
       padding: 12px 14px;
       border-radius: 14px;
       font-size: 0.85rem;
@@ -266,8 +266,8 @@
       <div class="payment-amount" id="displayMontoTarjeta">$0.00</div>
     </div>
 
-    <!-- AVISO DE PAGO INCOMPLETO EN AMARILLO PASTEL -->
-    <div id="alertaIncompleto" class="alerta-incompleto" style="display: none;">
+    <!-- AVISO DE PAGO INCOMPLETO CON COLORES DIRECTOS PASTEL -->
+    <div id="alertaIncompleto" class="alerta-incompleto-pastel" style="display: none; background-color: #fffbeb !important; border: 1px solid #fef3c7 !important; color: #b45309 !important;">
       📌 <strong>Abono incompleto:</strong> <span id="displayIncompleto">--</span>
     </div>
   </div>
